@@ -20,6 +20,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":identity"))
     testImplementation(kotlin("test"))
 }
 
