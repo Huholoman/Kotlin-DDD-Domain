@@ -1,8 +1,8 @@
 package org.huho.kotlin.libs.domain.identity.generator.serializer
 
 import org.huho.kotlin.libs.domain.identity.generator.serializer.generator.Generator
-import org.huho.kotlin.libs.identity.AbstractIdentity
 import org.huho.kotlin.libs.messenger.cqrs.generator.processor.ClassProcessor
+import org.huho.libs.domain.identity.AbstractIdentity
 import uy.klutter.core.collections.toImmutable
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf

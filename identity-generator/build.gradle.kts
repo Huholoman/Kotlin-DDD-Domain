@@ -19,7 +19,7 @@ sourceSets {
     }
 }
 
-group = "org.huho.kotlin.libs.domain"
+group = "org.huho.libs.domain"
 version = "1.0"
 
 repositories {
@@ -28,7 +28,8 @@ repositories {
 }
 
 dependencies {
-    implementation("org.huho.kotlin.libs:identity:0.1")
+//    implementation("org.huho.libs.domain:identity:0.1")
+    implementation(project(":identity"))
 
     implementation("io.insert-koin:koin-annotations:2.0.0-Beta2")
     implementation("io.insert-koin:koin-core:4.0.0")

@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "2.0.21"
 }
 
-group = "org.huho.kotlin.libs"
+group = "org.huho.libs"
 version = "1.0-SNAPSHOT"
 
 repositories {
