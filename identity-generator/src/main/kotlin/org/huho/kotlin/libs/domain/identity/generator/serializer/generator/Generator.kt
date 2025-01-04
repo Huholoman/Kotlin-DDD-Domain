@@ -3,12 +3,12 @@ package org.huho.kotlin.libs.domain.identity.generator.serializer.generator
 import org.huho.kotlin.libs.domain.identity.generator.serializer.SerializerInfo
 import java.io.File
 
-class Generator (
+class Generator(
     outputDir: File,
     packageName: String,
 ) {
-    val serializerGenerator = SerializerGenerator(outputDir);
-    val serializerProviderGenerator = SerializerProviderGenerator(outputDir, packageName);
+    val serializerGenerator = SerializerGenerator(outputDir)
+    val serializerProviderGenerator = SerializerProviderGenerator(outputDir, packageName)
 
     fun generate(serializerInfos: Set<SerializerInfo>) {
         serializerInfos.forEach { serializerGenerator.generate(it) }

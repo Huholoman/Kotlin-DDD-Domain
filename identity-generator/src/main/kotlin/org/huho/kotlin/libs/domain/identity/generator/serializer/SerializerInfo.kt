@@ -11,4 +11,3 @@ data class ClassInfo(
 ) {
     fun qualifiedName(): String = "$packagePath.$className"
 }
-
