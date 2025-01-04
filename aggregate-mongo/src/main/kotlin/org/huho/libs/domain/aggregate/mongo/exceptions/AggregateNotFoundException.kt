@@ -1,6 +1,6 @@
 package org.huho.libs.domain.aggregate.mongo.exceptions
 
-import org.huho.kotlin.libs.identity.AbstractIdentity
+import org.huho.libs.domain.identity.AbstractIdentity
 
 class AggregateNotFoundException(
     aggregateName: String,

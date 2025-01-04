@@ -55,8 +55,8 @@ tasks.test {
 gradlePlugin {
     plugins {
         create("generateIdentitySerializers") {
-            id = "org.huho.kotlin.libs.domain.identity-generator"
-            implementationClass = "org.huho.kotlin.libs.domain.identity.generator.plugin.CQRSGeneratorPlugin"
+            id = "org.huho.libs.domain.identity-generator"
+            implementationClass = "org.huho.libs.domain.identity.generator.plugin.CQRSGeneratorPlugin"
         }
     }
 }

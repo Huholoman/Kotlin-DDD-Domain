@@ -1,4 +1,4 @@
-package org.huho.kotlin.libs.messenger.cqrs.generator.processor
+package org.huho.libs.messenger.cqrs.generator.processor
 
 import kotlin.reflect.KClass
 

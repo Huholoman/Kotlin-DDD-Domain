@@ -1,9 +1,9 @@
-package org.huho.kotlin.libs.domain.identity.generator.serializer.generator
+package org.huho.libs.domain.identity.generator.serializer.generator
 
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import kotlinx.serialization.modules.SerializersModuleBuilder
-import org.huho.kotlin.libs.domain.identity.generator.serializer.SerializerInfo
+import org.huho.libs.domain.identity.generator.serializer.SerializerInfo
 import java.io.File
 
 class SerializerProviderGenerator(
@@ -11,9 +11,11 @@ class SerializerProviderGenerator(
     val packageName: String,
 ) {
     fun generate(infos: Set<SerializerInfo>) {
-        val functionBuilder = FunSpec.builder("registerIdentities")
-            .addParameter("moduleBuilder", SerializersModuleBuilder::class)
-            .addStatement("moduleBuilder.apply {")
+        val functionBuilder =
+            FunSpec
+                .builder("registerIdentities")
+                .addParameter("moduleBuilder", SerializersModuleBuilder::class)
+                .addStatement("moduleBuilder.apply {")
 
         infos.forEach {
             functionBuilder.addStatement(
@@ -25,7 +27,8 @@ class SerializerProviderGenerator(
 
         functionBuilder.addStatement("}")
 
-        FileSpec.builder("${packageName}.config", "RegisterIdentity")
+        FileSpec
+            .builder("$packageName.config", "RegisterIdentity")
             .addFunction(functionBuilder.build())
             .build()
             .writeTo(outputDir)

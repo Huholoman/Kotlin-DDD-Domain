@@ -1,8 +1,8 @@
-package org.huho.kotlin.libs.domain.identity.generator
+package org.huho.libs.domain.identity.generator
 
 import io.github.classgraph.ClassGraph
 import org.gradle.api.file.FileCollection
-import org.huho.kotlin.libs.messenger.cqrs.generator.processor.ClassProcessor
+import org.huho.libs.messenger.cqrs.generator.processor.ClassProcessor
 import java.net.URL
 import java.net.URLClassLoader
 

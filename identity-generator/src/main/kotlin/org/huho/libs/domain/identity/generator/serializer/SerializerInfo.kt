@@ -1,4 +1,4 @@
-package org.huho.kotlin.libs.domain.identity.generator.serializer
+package org.huho.libs.domain.identity.generator.serializer
 
 data class SerializerInfo(
     val classInfo: ClassInfo,

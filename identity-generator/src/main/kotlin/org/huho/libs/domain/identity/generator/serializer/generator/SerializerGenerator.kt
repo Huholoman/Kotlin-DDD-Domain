@@ -1,4 +1,4 @@
-package org.huho.kotlin.libs.domain.identity.generator.serializer.generator
+package org.huho.libs.domain.identity.generator.serializer.generator
 
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -11,7 +11,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import org.huho.kotlin.libs.domain.identity.generator.serializer.SerializerInfo
+import org.huho.libs.domain.identity.generator.serializer.SerializerInfo
 import java.io.File
 
 class SerializerGenerator(

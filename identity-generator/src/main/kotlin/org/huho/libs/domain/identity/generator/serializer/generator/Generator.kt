@@ -1,6 +1,6 @@
-package org.huho.kotlin.libs.domain.identity.generator.serializer.generator
+package org.huho.libs.domain.identity.generator.serializer.generator
 
-import org.huho.kotlin.libs.domain.identity.generator.serializer.SerializerInfo
+import org.huho.libs.domain.identity.generator.serializer.SerializerInfo
 import java.io.File
 
 class Generator(

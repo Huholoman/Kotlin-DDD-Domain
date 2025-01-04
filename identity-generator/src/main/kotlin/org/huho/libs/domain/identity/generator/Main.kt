@@ -1,8 +1,8 @@
-package org.huho.kotlin.libs.domain.identity.generator
+package org.huho.libs.domain.identity.generator
 
 import org.gradle.api.file.FileCollection
-import org.huho.kotlin.libs.domain.identity.generator.serializer.IdentitySerializersProcessor
-import org.huho.kotlin.libs.domain.identity.generator.serializer.generator.Generator
+import org.huho.libs.domain.identity.generator.serializer.IdentitySerializersProcessor
+import org.huho.libs.domain.identity.generator.serializer.generator.Generator
 import java.io.File
 
 class Main {

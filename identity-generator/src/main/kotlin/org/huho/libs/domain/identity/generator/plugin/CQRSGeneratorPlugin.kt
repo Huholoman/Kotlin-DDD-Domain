@@ -1,4 +1,4 @@
-package org.huho.kotlin.libs.domain.identity.generator.plugin
+package org.huho.libs.domain.identity.generator.plugin
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project

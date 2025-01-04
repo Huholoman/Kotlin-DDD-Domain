@@ -1,11 +1,11 @@
-package org.huho.kotlin.libs.domain.identity.generator.plugin
+package org.huho.libs.domain.identity.generator.plugin
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.TaskAction
-import org.huho.kotlin.libs.domain.identity.generator.Main
+import org.huho.libs.domain.identity.generator.Main
 
 open class CQRSGeneratorTask : DefaultTask() {
     init {
