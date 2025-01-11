@@ -2,7 +2,6 @@ package org.huho.libs.domain.aggregate.mongo
 
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
@@ -10,19 +9,21 @@ import org.bson.Document
 import org.huho.libs.domain.aggregate.Aggregate
 import org.huho.libs.domain.aggregate.AggregateRepository
 import org.huho.libs.domain.aggregate.mongo.exceptions.AggregateNotFoundException
-import org.huho.libs.domain.aggregate.mongo.exceptions.MissingCollectionNameException
 import org.huho.libs.domain.identity.AbstractIdentity
 
 open class MongoAggregateRepository(
-    private val database: MongoDatabase,
+    private val database: MongoApplicationDatabase,
     private val json: Json,
+    private val collectionNameResolver: CollectionNameResolver,
 ) : AggregateRepository {
     constructor(
         client: MongoClient,
         json: Json,
+        collectionNameResolver: CollectionNameResolver,
     ) : this(
-        client.getDatabase("default"),
+        MongoApplicationDatabase(client.getDatabase("default")),
         json,
+        collectionNameResolver,
     )
 
     override suspend fun <ID : AbstractIdentity, T : Aggregate<ID>> insert(
@@ -68,12 +69,10 @@ open class MongoAggregateRepository(
         serializer: KSerializer<T>,
     ): Boolean = find(id, aggregateClass, serializer) != null
 
-    private fun <ID : AbstractIdentity, T : Aggregate<ID>> resolveCollectionFromClass(aggregateClass: Class<T>): MongoCollection<Document> {
-        val collectionNameAnnotation =
-            aggregateClass.getAnnotation(CollectionName::class.java)
-                ?: throw MissingCollectionNameException(aggregateClass)
-        return database.getCollection(collectionNameAnnotation.value)
-    }
+    private fun <ID : AbstractIdentity, T : Aggregate<ID>> resolveCollectionFromClass(aggregateClass: Class<T>): MongoCollection<Document> =
+        database.database.getCollection(
+            collectionNameResolver.resolve(aggregateClass),
+        )
 
     private fun <ID : AbstractIdentity, T : Aggregate<ID>> serialize(
         aggregate: T,

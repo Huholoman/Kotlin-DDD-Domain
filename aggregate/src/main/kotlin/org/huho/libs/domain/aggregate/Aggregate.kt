@@ -12,7 +12,5 @@ abstract class Aggregate<T : AbstractIdentity> {
         return getId() == other.getId()
     }
 
-    override fun hashCode(): Int {
-        return getId().hashCode()
-    }
+    override fun hashCode(): Int = getId().hashCode()
 }
