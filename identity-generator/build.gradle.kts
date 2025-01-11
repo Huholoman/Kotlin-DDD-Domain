@@ -2,7 +2,10 @@ plugins {
     kotlin("jvm") version "2.0.21"
     kotlin("plugin.serialization") version "2.0.21"
     `java-gradle-plugin`
-    id("com.gradle.plugin-publish") version "1.2.0" // Pokud chcete publikovat na Gradle Plugin Portal
+    // Pokud chco publikovat na Gradle Plugin Portal...
+    // Potřebuju to furt? podle mě jsem to přidal jako pokus,
+    // když mi nefungovalo pusblishování...
+    id("com.gradle.plugin-publish") version "1.2.0"
 }
 
 java {
@@ -28,7 +31,6 @@ repositories {
 }
 
 dependencies {
-//    implementation("org.huho.libs.domain:identity:0.1")
     implementation(project(":identity"))
 
     implementation("io.insert-koin:koin-annotations:2.0.0-Beta2")
