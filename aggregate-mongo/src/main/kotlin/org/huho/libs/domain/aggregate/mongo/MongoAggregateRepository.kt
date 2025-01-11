@@ -1,12 +1,12 @@
 package org.huho.libs.domain.aggregate.mongo
 
-import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import org.bson.Document
 import org.huho.libs.domain.aggregate.Aggregate
+import org.huho.libs.domain.aggregate.AggregateEventProcessor
 import org.huho.libs.domain.aggregate.AggregateRepository
 import org.huho.libs.domain.aggregate.mongo.exceptions.AggregateNotFoundException
 import org.huho.libs.domain.identity.AbstractIdentity
@@ -15,21 +15,14 @@ open class MongoAggregateRepository(
     private val database: MongoApplicationDatabase,
     private val json: Json,
     private val collectionNameResolver: CollectionNameResolver,
+    private val eventProcessor: AggregateEventProcessor,
 ) : AggregateRepository {
-    constructor(
-        client: MongoClient,
-        json: Json,
-        collectionNameResolver: CollectionNameResolver,
-    ) : this(
-        MongoApplicationDatabase(client.getDatabase("default")),
-        json,
-        collectionNameResolver,
-    )
-
     override suspend fun <ID : AbstractIdentity, T : Aggregate<ID>> insert(
         aggregate: T,
         serializer: KSerializer<T>,
     ) {
+        aggregate.pullEvents().forEach { eventProcessor.process(it) }
+
         val collection = resolveCollectionFromClass(aggregate::class.java)
         val document = serialize(aggregate, serializer)
         document["_id"] = aggregate.getId().toString()
@@ -40,6 +33,8 @@ open class MongoAggregateRepository(
         aggregate: T,
         serializer: KSerializer<T>,
     ) {
+        aggregate.pullEvents().forEach { eventProcessor.process(it) }
+
         val collection = resolveCollectionFromClass(aggregate::class.java)
         val document = serialize(aggregate, serializer)
         collection.replaceOne(resolveDocumentId(aggregate.getId()), document)

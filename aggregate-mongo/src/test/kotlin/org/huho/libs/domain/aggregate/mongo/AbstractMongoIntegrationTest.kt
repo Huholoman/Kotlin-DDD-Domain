@@ -21,6 +21,7 @@ import org.huho.libs.domain.aggregate.mongo.CollectionName
 import org.huho.libs.domain.aggregate.mongo.CollectionNameResolver
 import org.huho.libs.domain.aggregate.mongo.MongoAggregateRepository
 import org.huho.libs.domain.aggregate.mongo.MongoApplicationDatabase
+import org.huho.libs.domain.aggregate.mongo.SpyAggregateEventProcessor
 import org.huho.libs.domain.identity.AbstractIdentity
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -31,10 +32,17 @@ abstract class AbstractMongoIntegrationTest {
     protected lateinit var database: MongoDatabase
     protected lateinit var repository: MongoAggregateRepository
     protected val collectionNameResolver = CollectionNameResolver()
+    protected val eventProcessor = SpyAggregateEventProcessor()
 
+    /**
+     * This is probably overkill.
+     * For regular tests will be fine to set one repository for all tests.
+     */
     @BeforeEach
     fun setUp() =
         runBlocking {
+            eventProcessor.pullEvents()
+
             mongoClient = MongoClient.create(getConnectionString())
 
             val dbName = "test-db-${UUID.randomUUID().toString().replace("-", "")}"
@@ -45,6 +53,7 @@ abstract class AbstractMongoIntegrationTest {
                     MongoApplicationDatabase(database),
                     GlobalJson.json,
                     collectionNameResolver,
+                    eventProcessor,
                 )
         }
 
@@ -75,29 +84,61 @@ object GlobalJson {
 
 @CollectionName("test")
 @Serializable
-class TestAggregate constructor(
+class TestAggregate : Aggregate<TestId>() {
     @SerialName("_id")
-    private val id: TestId,
-) : Aggregate<TestId>() {
+    private lateinit var id: TestId
     private var note: String? = null
 
     private var generic: Generic? = null
 
-    constructor(testId: TestId, note: String?) : this(testId) {
-        this.note = note
+    fun create(
+        testId: TestId,
+        note: String? = null,
+    ) {
+        recordEvent(TestCreated(testId))
+        if (note != null) {
+            recordEvent(TestNoteChanged(testId, note))
+        }
     }
 
     fun changeGeneric(newValue: Generic) {
-        generic = newValue
+        recordEvent(TestGenericChanged(id, newValue))
     }
 
     fun changeNote(newNote: String) {
-        this.note = newNote
+        recordEvent(TestNoteChanged(id, newNote))
     }
 
     fun getNote() = note
 
+    override fun apply(event: Any) {
+        when (event) {
+            is TestCreated -> id = event.id
+            is TestNoteChanged -> note = event.note
+            is TestGenericChanged -> generic = event.generic
+            else -> throw IllegalArgumentException("Unknown event: $event")
+        }
+    }
+
     override fun getId(): TestId = id
+
+    data class TestCreated(
+        val id: TestId,
+    )
+
+    data class TestNoteChanged(
+        val id: TestId,
+        val note: String?,
+    )
+
+    data class TestGenericChanged(
+        val id: TestId,
+        val generic: Generic,
+    )
+
+    data class UnknownTestEvent(
+        val id: TestId,
+    )
 }
 
 @Serializable

@@ -3,6 +3,20 @@ package org.huho.libs.domain.aggregate
 import org.huho.libs.domain.identity.AbstractIdentity
 
 abstract class Aggregate<T : AbstractIdentity> {
+    private val events: MutableList<Any> = mutableListOf()
+
+    protected fun recordEvent(event: Any) {
+        events.add(event)
+        apply(event)
+    }
+
+    protected abstract fun apply(event: Any)
+
+    fun pullEvents(): List<Any> =
+        events
+            .toList()
+            .also { events.clear() }
+
     abstract fun getId(): T
 
     override fun equals(other: Any?): Boolean {
