@@ -39,7 +39,7 @@ class MongoAggregateRepositoryTest : AbstractMongoIntegrationTest() {
             val recordedEvents = eventProcessor.pullEvents()
 
             assertEquals(
-                listOf(TestAggregate.TestCreated(aggregate.getId())),
+                listOf(TestAggregate.TestCreated(aggregate.id)),
                 recordedEvents,
             )
         }

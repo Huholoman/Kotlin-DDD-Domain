@@ -1,5 +1,5 @@
 package org.huho.libs.domain.aggregate.mongo
 
-class MongoConfig(
+data class MongoConfig(
     val connectionString: String,
 )

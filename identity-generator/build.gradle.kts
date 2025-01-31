@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.0.21"
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("jvm")
+    kotlin("plugin.serialization") version "2.1.20-Beta1"
     `java-gradle-plugin`
     // Pokud chco publikovat na Gradle Plugin Portal...
     // Potřebuju to furt? podle mě jsem to přidal jako pokus,

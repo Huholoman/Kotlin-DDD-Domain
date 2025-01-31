@@ -86,7 +86,7 @@ object GlobalJson {
 @Serializable
 class TestAggregate : Aggregate<TestId>() {
     @SerialName("_id")
-    private lateinit var id: TestId
+    override lateinit var id: TestId
     private var note: String? = null
 
     private var generic: Generic? = null
@@ -95,18 +95,18 @@ class TestAggregate : Aggregate<TestId>() {
         testId: TestId,
         note: String? = null,
     ) {
-        recordEvent(TestCreated(testId))
+        record(TestCreated(testId))
         if (note != null) {
-            recordEvent(TestNoteChanged(testId, note))
+            record(TestNoteChanged(testId, note))
         }
     }
 
     fun changeGeneric(newValue: Generic) {
-        recordEvent(TestGenericChanged(id, newValue))
+        record(TestGenericChanged(id, newValue))
     }
 
     fun changeNote(newNote: String) {
-        recordEvent(TestNoteChanged(id, newNote))
+        record(TestNoteChanged(id, newNote))
     }
 
     fun getNote() = note
@@ -119,8 +119,6 @@ class TestAggregate : Aggregate<TestId>() {
             else -> throw IllegalArgumentException("Unknown event: $event")
         }
     }
-
-    override fun getId(): TestId = id
 
     data class TestCreated(
         val id: TestId,

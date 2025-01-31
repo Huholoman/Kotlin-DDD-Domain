@@ -25,7 +25,7 @@ open class MongoAggregateRepository(
 
         val collection = resolveCollectionFromClass(aggregate::class.java)
         val document = serialize(aggregate, serializer)
-        document["_id"] = aggregate.getId().toString()
+        document["_id"] = aggregate.id.toString()
         collection.insertOne(document)
     }
 
@@ -37,7 +37,7 @@ open class MongoAggregateRepository(
 
         val collection = resolveCollectionFromClass(aggregate::class.java)
         val document = serialize(aggregate, serializer)
-        collection.replaceOne(resolveDocumentId(aggregate.getId()), document)
+        collection.replaceOne(resolveDocumentId(aggregate.id), document)
     }
 
     override suspend fun <ID : AbstractIdentity, T : Aggregate<ID>> find(
@@ -46,7 +46,7 @@ open class MongoAggregateRepository(
         serializer: KSerializer<T>,
     ): T? {
         val collection: MongoCollection<Document> = resolveCollectionFromClass(aggregateClass)
-        val document = collection.find(Document("_id", id.toString())).firstOrNull() // MongoDB coroutine version
+        val document = collection.find(Document("_id", id.toString())).firstOrNull()
         return document?.let { deserialize(it, serializer) }
     }
 
@@ -64,7 +64,9 @@ open class MongoAggregateRepository(
         serializer: KSerializer<T>,
     ): Boolean = find(id, aggregateClass, serializer) != null
 
-    private fun <ID : AbstractIdentity, T : Aggregate<ID>> resolveCollectionFromClass(aggregateClass: Class<T>): MongoCollection<Document> =
+    private fun <ID : AbstractIdentity, T : Aggregate<ID>> resolveCollectionFromClass(
+        aggregateClass: Class<T>,
+    ): MongoCollection<Document> =
         database.database.getCollection(
             collectionNameResolver.resolve(aggregateClass),
         )
