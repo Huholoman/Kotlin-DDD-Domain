@@ -1,10 +1,10 @@
 package org.huho.libs.aggregate.mongo
 
+import com.mongodb.MongoClientSettings
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -12,16 +12,14 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-import kotlinx.serialization.modules.subclass
+import org.bson.codecs.configuration.CodecRegistries
+import org.bson.codecs.configuration.CodecRegistry
+import org.bson.codecs.kotlinx.KotlinSerializerCodecProvider
 import org.huho.libs.domain.aggregate.Aggregate
 import org.huho.libs.domain.aggregate.mongo.CollectionName
 import org.huho.libs.domain.aggregate.mongo.CollectionNameResolver
 import org.huho.libs.domain.aggregate.mongo.MongoAggregateRepository
 import org.huho.libs.domain.aggregate.mongo.MongoApplicationDatabase
-import org.huho.libs.domain.aggregate.mongo.SpyAggregateEventProcessor
 import org.huho.libs.domain.identity.AbstractIdentity
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -43,15 +41,21 @@ abstract class AbstractMongoIntegrationTest {
         runBlocking {
             eventProcessor.pullEvents()
 
+            // Use GlobalJson.serializersModule for MongoDB serialization
+            val codecRegistry: CodecRegistry =
+                CodecRegistries.fromRegistries(
+                    MongoClientSettings.getDefaultCodecRegistry(),
+                    CodecRegistries.fromProviders(KotlinSerializerCodecProvider()),
+                )
+
             mongoClient = MongoClient.create(getConnectionString())
 
             val dbName = "test-db-${UUID.randomUUID().toString().replace("-", "")}"
-            database = mongoClient.getDatabase(dbName)
+            database = mongoClient.getDatabase(dbName).withCodecRegistry(codecRegistry)
 
             repository =
                 MongoAggregateRepository(
                     MongoApplicationDatabase(database),
-                    GlobalJson.json,
                     collectionNameResolver,
                     eventProcessor,
                 )
@@ -67,19 +71,6 @@ abstract class AbstractMongoIntegrationTest {
     protected fun getConnectionString(): String =
         System.getenv("MONGO_CONNECTION_STRING")
             ?: "mongodb://localhost:27017"
-}
-
-object GlobalJson {
-    val json =
-        Json {
-            serializersModule =
-                SerializersModule {
-                    polymorphic(Generic::class) {
-                        subclass(GenericA::class)
-                        subclass(GenericB::class)
-                    }
-                }
-        }
 }
 
 @CollectionName("test")
@@ -120,40 +111,43 @@ class TestAggregate : Aggregate<TestId>() {
         }
     }
 
+    @Serializable
     data class TestCreated(
         val id: TestId,
     )
 
+    @Serializable
     data class TestNoteChanged(
         val id: TestId,
         val note: String?,
     )
 
+    @Serializable
     data class TestGenericChanged(
         val id: TestId,
         val generic: Generic,
     )
 
+    @Serializable
     data class UnknownTestEvent(
         val id: TestId,
     )
 }
 
 @Serializable
-@Polymorphic
-sealed interface Generic
+sealed interface Generic {
+    @Serializable
+    @SerialName("generic_a")
+    data class GenericA(
+        val a: Int,
+    ) : Generic
 
-@Serializable
-@SerialName("generic_a")
-data class GenericA(
-    val a: Int,
-) : Generic
-
-@Serializable
-@SerialName("generic_b")
-data class GenericB(
-    val b: String,
-) : Generic
+    @Serializable
+    @SerialName("generic_b")
+    data class GenericB(
+        val b: String,
+    ) : Generic
+}
 
 @Serializable(with = TestIdSerializer::class)
 class TestId : AbstractIdentity {

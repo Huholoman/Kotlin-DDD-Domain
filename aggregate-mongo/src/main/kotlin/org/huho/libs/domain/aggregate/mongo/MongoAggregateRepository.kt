@@ -3,7 +3,6 @@ package org.huho.libs.domain.aggregate.mongo
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.Json
 import org.bson.Document
 import org.huho.libs.domain.aggregate.Aggregate
 import org.huho.libs.domain.aggregate.AggregateEventProcessor
@@ -13,7 +12,6 @@ import org.huho.libs.domain.identity.AbstractIdentity
 
 open class MongoAggregateRepository(
     private val database: MongoApplicationDatabase,
-    private val json: Json,
     private val collectionNameResolver: CollectionNameResolver,
     private val eventProcessor: AggregateEventProcessor,
 ) : AggregateRepository {
@@ -23,10 +21,8 @@ open class MongoAggregateRepository(
     ) {
         aggregate.pullEvents().forEach { eventProcessor.process(it) }
 
-        val collection = resolveCollectionFromClass(aggregate::class.java)
-        val document = serialize(aggregate, serializer)
-        document["_id"] = aggregate.id.toString()
-        collection.insertOne(document)
+        val collection = resolveCollectionFromClass(aggregate::class.java) as MongoCollection<T>
+        collection.insertOne(aggregate)
     }
 
     override suspend fun <ID : AbstractIdentity, T : Aggregate<ID>> save(
@@ -35,9 +31,9 @@ open class MongoAggregateRepository(
     ) {
         aggregate.pullEvents().forEach { eventProcessor.process(it) }
 
-        val collection = resolveCollectionFromClass(aggregate::class.java)
-        val document = serialize(aggregate, serializer)
-        collection.replaceOne(resolveDocumentId(aggregate.id), document)
+        val collection = resolveCollectionFromClass(aggregate::class.java) as MongoCollection<T>
+//        val document = serialize(aggregate, serializer)
+        collection.replaceOne(resolveDocumentId(aggregate.id), aggregate)
     }
 
     override suspend fun <ID : AbstractIdentity, T : Aggregate<ID>> find(
@@ -45,9 +41,10 @@ open class MongoAggregateRepository(
         aggregateClass: Class<T>,
         serializer: KSerializer<T>,
     ): T? {
-        val collection: MongoCollection<Document> = resolveCollectionFromClass(aggregateClass)
-        val document = collection.find(Document("_id", id.toString())).firstOrNull()
-        return document?.let { deserialize(it, serializer) }
+        val collection: MongoCollection<T> = resolveCollectionFromClass(aggregateClass)
+        return collection.find(Document("_id", id.toString())).firstOrNull()
+//        val document = collection.find(Document("_id", id.toString())).firstOrNull()
+//        return document?.let { deserialize(it, serializer) }
     }
 
     override suspend fun <ID : AbstractIdentity, T : Aggregate<ID>> get(
@@ -66,26 +63,27 @@ open class MongoAggregateRepository(
 
     private fun <ID : AbstractIdentity, T : Aggregate<ID>> resolveCollectionFromClass(
         aggregateClass: Class<T>,
-    ): MongoCollection<Document> =
+    ): MongoCollection<T> =
         database.database.getCollection(
             collectionNameResolver.resolve(aggregateClass),
+            aggregateClass,
         )
 
-    private fun <ID : AbstractIdentity, T : Aggregate<ID>> serialize(
-        aggregate: T,
-        serializer: KSerializer<T>,
-    ): Document {
-        val jsonStr = json.encodeToString(serializer, aggregate)
-        return Document.parse(jsonStr)
-    }
+//    private fun <ID : AbstractIdentity, T : Aggregate<ID>> serialize(
+//        aggregate: T,
+//        serializer: KSerializer<T>,
+//    ): Document {
+//        val jsonStr = json.encodeToString(serializer, aggregate)
+//        return Document.parse(jsonStr)
+//    }
 
-    private fun <T> deserialize(
-        document: Document,
-        serializer: KSerializer<T>,
-    ): T {
-        val jsonStr = document.toJson()
-        return json.decodeFromString(serializer, jsonStr)
-    }
+//    private fun <T> deserialize(
+//        document: Document,
+//        serializer: KSerializer<T>,
+//    ): T {
+//        val jsonStr = document.toJson()
+//        return json.decodeFromString(serializer, jsonStr)
+//    }
 
     private fun <ID : AbstractIdentity> resolveDocumentId(id: ID): Document = Document("_id", id.toString())
 }

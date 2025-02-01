@@ -13,7 +13,7 @@ class MongoAggregateRepositoryTest : AbstractMongoIntegrationTest() {
             val aggregate =
                 TestAggregate().apply {
                     create(aggregateId, "test note")
-                    changeGeneric(GenericA(1))
+                    changeGeneric(Generic.GenericA(1))
                 }
 
             repository.insert(aggregate, TestAggregate.serializer())
@@ -49,7 +49,7 @@ class MongoAggregateRepositoryTest : AbstractMongoIntegrationTest() {
         runBlocking {
             // when
             val testId = TestId()
-            val generic = GenericA(1)
+            val generic = Generic.GenericA(1)
             val note = "new note"
 
             val aggregate =

@@ -2,7 +2,7 @@ plugins {
     id("java")
     kotlin("jvm")
     kotlin("plugin.serialization") version "2.1.20-Beta1"
-    `kotlin-dsl` version "5.1.2"
+    `kotlin-dsl` version "5.2.0"
     `maven-publish`
 }
 
@@ -27,8 +27,9 @@ dependencies {
 
     implementation("org.reflections:reflections:0.10")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:5.2.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:5.3.1")
+    api("org.mongodb:bson-kotlinx:5.3.1")
 
     testImplementation(kotlin("test"))
 }

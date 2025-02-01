@@ -1,4 +1,4 @@
-package org.huho.libs.domain.aggregate.mongo
+package org.huho.libs.aggregate.mongo
 
 import org.huho.libs.domain.aggregate.AggregateEventProcessor
 
