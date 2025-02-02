@@ -29,6 +29,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine:5.3.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
     api("org.mongodb:bson-kotlinx:5.3.1")
 
     testImplementation(kotlin("test"))

@@ -1,10 +1,31 @@
 package org.huho.libs.aggregate.mongo
 
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
+import kotlinx.datetime.toLocalDateTime
+import org.huho.libs.domain.aggregate.mongo.types.MongoLocalDate
+import org.huho.libs.domain.aggregate.mongo.types.MongoLocalDateTime
+import org.huho.libs.domain.aggregate.mongo.types.MongoLocalTime
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class MongoAggregateRepositoryTest : AbstractMongoIntegrationTest() {
+    val datetime = MongoLocalDateTime(Clock.System.now().toLocalDateTime(kotlinx.datetime.TimeZone.UTC))
+    val date =
+        MongoLocalDate(
+            Clock.System
+                .now()
+                .toLocalDateTime(kotlinx.datetime.TimeZone.UTC)
+                .date,
+        )
+    val time =
+        MongoLocalTime(
+            Clock.System
+                .now()
+                .toLocalDateTime(kotlinx.datetime.TimeZone.UTC)
+                .time,
+        )
+
     @Test
     fun `it should store and find aggregate`() =
         runBlocking {
@@ -45,7 +66,7 @@ class MongoAggregateRepositoryTest : AbstractMongoIntegrationTest() {
         }
 
     @Test
-    fun `it should record multiple eventsevent`() =
+    fun `it should record multiple events`() =
         runBlocking {
             // when
             val testId = TestId()

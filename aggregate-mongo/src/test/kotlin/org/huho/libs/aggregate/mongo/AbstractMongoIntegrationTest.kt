@@ -20,6 +20,9 @@ import org.huho.libs.domain.aggregate.mongo.CollectionName
 import org.huho.libs.domain.aggregate.mongo.CollectionNameResolver
 import org.huho.libs.domain.aggregate.mongo.MongoAggregateRepository
 import org.huho.libs.domain.aggregate.mongo.MongoApplicationDatabase
+import org.huho.libs.domain.aggregate.mongo.types.MongoLocalDate
+import org.huho.libs.domain.aggregate.mongo.types.MongoLocalDateTime
+import org.huho.libs.domain.aggregate.mongo.types.MongoLocalTime
 import org.huho.libs.domain.identity.AbstractIdentity
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -79,8 +82,10 @@ class TestAggregate : Aggregate<TestId>() {
     @SerialName("_id")
     override lateinit var id: TestId
     private var note: String? = null
-
     private var generic: Generic? = null
+    private var datetime: MongoLocalDateTime? = null
+    private var date: MongoLocalDate? = null
+    private var time: MongoLocalTime? = null
 
     fun create(
         testId: TestId,
@@ -98,6 +103,18 @@ class TestAggregate : Aggregate<TestId>() {
 
     fun changeNote(newNote: String) {
         record(TestNoteChanged(id, newNote))
+    }
+
+    fun changeDateTime(datetime: MongoLocalDateTime) {
+        this.datetime = datetime
+    }
+
+    fun changeDate(date: MongoLocalDate) {
+        this.date = date
+    }
+
+    fun changeTime(time: MongoLocalTime) {
+        this.time = time
     }
 
     fun getNote() = note
