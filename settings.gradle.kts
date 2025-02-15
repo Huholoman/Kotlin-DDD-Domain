@@ -1,4 +1,4 @@
-rootProject.name = "domain"
+rootProject.name = "kotlin-ddd-domain"
 
 include("aggregate")
 

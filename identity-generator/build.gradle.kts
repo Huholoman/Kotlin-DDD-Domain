@@ -2,9 +2,6 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization") version "2.1.20-Beta1"
     `java-gradle-plugin`
-    // Pokud chco publikovat na Gradle Plugin Portal...
-    // Potřebuju to furt? podle mě jsem to přidal jako pokus,
-    // když mi nefungovalo pusblishování...
     id("com.gradle.plugin-publish") version "1.2.0"
 }
 
@@ -17,13 +14,12 @@ java {
 
 sourceSets {
     main {
-//        java.srcDir("src/main/java")
         kotlin.srcDir("src/main/kotlin")
     }
 }
 
-group = "org.huho.libs.domain"
-version = "1.0"
+group = "org.huho.domain"
+version = "0.1"
 
 repositories {
     mavenLocal()
@@ -57,8 +53,8 @@ tasks.test {
 gradlePlugin {
     plugins {
         create("generateIdentitySerializers") {
-            id = "org.huho.libs.domain.identity-generator"
-            implementationClass = "org.huho.libs.domain.identity.generator.plugin.CQRSGeneratorPlugin"
+            id = "org.huho.domain.identity-generator"
+            implementationClass = "org.huho.domain.identity.generator.plugin.CQRSGeneratorPlugin"
         }
     }
 }

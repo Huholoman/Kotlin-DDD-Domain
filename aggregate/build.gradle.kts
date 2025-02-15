@@ -11,7 +11,7 @@ java {
     }
 }
 
-group = "org.huho.libs.domain"
+group = "org.huho.domain"
 version = "0.1"
 
 repositories {

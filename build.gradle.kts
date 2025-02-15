@@ -3,8 +3,8 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
 }
 
-group = "org.huho.libs"
-version = "1.0-SNAPSHOT"
+group = "org.huho"
+version = "0.1"
 
 repositories {
     mavenCentral()
