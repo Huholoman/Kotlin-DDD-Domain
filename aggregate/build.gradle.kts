@@ -33,7 +33,14 @@ tasks.test {
 
 publishing {
     repositories {
-        mavenLocal()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Huholoman/Kotlin-DDD-Domain")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
     publications {
         create<MavenPublication>("mavenJava") {

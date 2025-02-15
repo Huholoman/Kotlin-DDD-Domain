@@ -1,8 +1,8 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization") version "2.1.20-Beta1"
-    `java-gradle-plugin`
-    id("com.gradle.plugin-publish") version "1.2.0"
+    `maven-publish`
+    id("com.gradle.plugin-publish") version "1.3.1"
 }
 
 java {
@@ -55,6 +55,19 @@ gradlePlugin {
         create("generateIdentitySerializers") {
             id = "org.huho.domain.identity-generator"
             implementationClass = "org.huho.domain.identity.generator.plugin.CQRSGeneratorPlugin"
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Huholoman/Kotlin-DDD-Domain")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }

@@ -37,16 +37,13 @@ dependencies {
 
 publishing {
     repositories {
-        mavenLocal()
-    }
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-//            from(components["kotlin"])
-//            artifact(tasks.named("sourcesJar")) {
-//                classifier = "sources"
-//            }
-//            artifact(tasks.named("javadocJar"))
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Huholoman/Kotlin-DDD-Domain")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }
