@@ -10,12 +10,12 @@ import org.huho.domain.aggregate.AggregateRepository
 import org.huho.domain.aggregate.mongo.exceptions.AggregateNotFoundException
 import org.huho.domain.identity.AbstractIdentity
 
-open class MongoAggregateRepository(
+open class MongoAggregateRepository<Event : Any>(
     private val database: MongoApplicationDatabase,
     private val collectionNameResolver: CollectionNameResolver,
-    private val eventProcessor: AggregateEventProcessor,
-) : AggregateRepository {
-    override suspend fun <ID : AbstractIdentity, T : Aggregate<ID>> insert(
+    private val eventProcessor: AggregateEventProcessor<Event>,
+) : AggregateRepository<Event> {
+    override suspend fun <ID : AbstractIdentity, T : Aggregate<ID, Event>> insert(
         aggregate: T,
         serializer: KSerializer<T>,
     ) {
@@ -25,7 +25,7 @@ open class MongoAggregateRepository(
         collection.insertOne(aggregate)
     }
 
-    override suspend fun <ID : AbstractIdentity, T : Aggregate<ID>> save(
+    override suspend fun <ID : AbstractIdentity, T : Aggregate<ID, Event>> save(
         aggregate: T,
         serializer: KSerializer<T>,
     ) {
@@ -36,7 +36,7 @@ open class MongoAggregateRepository(
         collection.replaceOne(resolveDocumentId(aggregate.id), aggregate)
     }
 
-    override suspend fun <ID : AbstractIdentity, T : Aggregate<ID>> find(
+    override suspend fun <ID : AbstractIdentity, T : Aggregate<ID, Event>> find(
         id: ID,
         aggregateClass: Class<T>,
         serializer: KSerializer<T>,
@@ -47,7 +47,7 @@ open class MongoAggregateRepository(
 //        return document?.let { deserialize(it, serializer) }
     }
 
-    override suspend fun <ID : AbstractIdentity, T : Aggregate<ID>> get(
+    override suspend fun <ID : AbstractIdentity, T : Aggregate<ID, Event>> get(
         id: ID,
         aggregateClass: Class<T>,
         serializer: KSerializer<T>,
@@ -55,13 +55,13 @@ open class MongoAggregateRepository(
         find(id, aggregateClass, serializer)
             ?: throw AggregateNotFoundException(aggregateClass.name, id)
 
-    override suspend fun <ID : AbstractIdentity, T : Aggregate<ID>> exists(
+    override suspend fun <ID : AbstractIdentity, T : Aggregate<ID, Event>> exists(
         id: ID,
         aggregateClass: Class<T>,
         serializer: KSerializer<T>,
     ): Boolean = find(id, aggregateClass, serializer) != null
 
-    private fun <ID : AbstractIdentity, T : Aggregate<ID>> resolveCollectionFromClass(
+    private fun <ID : AbstractIdentity, T : Aggregate<ID, Event>> resolveCollectionFromClass(
         aggregateClass: Class<T>,
     ): MongoCollection<T> =
         database.database.getCollection(

@@ -1,7 +1,7 @@
 package org.huho.domain.aggregate
 
-class NullAggregateEventProcessor : AggregateEventProcessor {
-    override suspend fun process(event: Any) {
+class NullAggregateEventProcessor<Event : Any> : AggregateEventProcessor<Event> {
+    override suspend fun process(event: Event) {
         // do nothing
     }
 }

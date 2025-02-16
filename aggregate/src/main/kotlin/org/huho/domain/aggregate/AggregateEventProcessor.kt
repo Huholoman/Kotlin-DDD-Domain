@@ -1,5 +1,5 @@
 package org.huho.domain.aggregate
 
-interface AggregateEventProcessor {
-    suspend fun process(event: Any)
+interface AggregateEventProcessor<Event : Any> {
+    suspend fun process(event: Event)
 }

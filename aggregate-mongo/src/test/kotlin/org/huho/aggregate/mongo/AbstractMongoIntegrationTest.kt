@@ -31,9 +31,9 @@ import java.util.UUID
 abstract class AbstractMongoIntegrationTest {
     protected lateinit var mongoClient: MongoClient
     protected lateinit var database: MongoDatabase
-    protected lateinit var repository: MongoAggregateRepository
+    protected lateinit var repository: MongoAggregateRepository<Any>
     protected val collectionNameResolver = CollectionNameResolver()
-    protected val eventProcessor = SpyAggregateEventProcessor()
+    protected val eventProcessor = SpyAggregateEventProcessor<Any>()
 
     /**
      * This is probably overkill.
@@ -78,7 +78,7 @@ abstract class AbstractMongoIntegrationTest {
 
 @CollectionName("test")
 @Serializable
-class TestAggregate : Aggregate<TestId>() {
+class TestAggregate : Aggregate<TestId, Any>() {
     @SerialName("_id")
     override lateinit var id: TestId
     private var note: String? = null
